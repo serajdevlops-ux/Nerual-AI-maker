@@ -1,219 +1,1722 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#0b1020">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080d1a">
 <title>Neural Map Maker</title>
+
 <style>
-:root{--bg:#0b1020;--panel:#121a2e;--panel2:#17223b;--text:#edf3ff;--muted:#98a8c8;--line:#2b3b5e;--accent:#7c9cff;--green:#7be0b2;--warn:#ffd58a}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#152344 0,#0b1020 45%);color:var(--text);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-header{padding:22px 16px 14px;border-bottom:1px solid var(--line);position:sticky;top:0;background:#0b1020ed;backdrop-filter:blur(12px);z-index:3}
-.brand{font-weight:800;font-size:22px;letter-spacing:-.5px}.brand span{color:var(--accent)}.subtitle{color:var(--muted);font-size:12px;margin-top:3px}
-main{max-width:980px;margin:auto;padding:14px;display:grid;gap:14px}.card{background:linear-gradient(160deg,#151f36,#10172a);border:1px solid var(--line);border-radius:16px;padding:15px;box-shadow:0 8px 28px #0002}
-h2{font-size:16px;margin:0 0 10px}p{margin:7px 0;color:var(--muted)}.row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1;min-width:130px}
-button,.filebtn{border:1px solid #415783;background:#23365d;color:var(--text);border-radius:10px;padding:11px 13px;font-weight:650;font-size:13px;cursor:pointer;text-align:center}
-button.primary{background:var(--accent);border-color:var(--accent);color:#071126}button.secondary{background:#192641}button:disabled{opacity:.45;cursor:not-allowed}
-textarea,input[type=text]{width:100%;background:#0b1325;border:1px solid var(--line);border-radius:10px;color:var(--text);padding:11px;font:14px/1.5 ui-monospace,SFMono-Regular,monospace;outline:none}
-textarea{min-height:105px;resize:vertical}label{display:block;color:var(--muted);font-size:12px;margin:9px 0 5px}
-input[type=file]{width:100%;font-size:12px;color:var(--muted);margin:6px 0}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.stat{padding:10px;background:#0d1629;border:1px solid var(--line);border-radius:10px}.stat b{display:block;font-size:20px}.stat small{color:var(--muted)}
-#map{width:100%;height:300px;background:#091121;border:1px solid var(--line);border-radius:12px;display:block}
-.answer{background:#0b1325;border:1px solid var(--line);border-radius:10px;padding:12px;min-height:58px;white-space:pre-wrap;overflow-wrap:anywhere}
-.badge{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:4px 8px;color:var(--muted);font-size:11px;margin:2px}
-.status{font-size:12px;color:var(--green);min-height:18px;margin-top:8px}.warning{color:var(--warn);font-size:12px}.foot{font-size:11px;color:var(--muted);text-align:center;padding:4px 10px 25px}
-details{border-top:1px solid var(--line);margin-top:12px;padding-top:10px}summary{cursor:pointer;color:#b9c9eb;font-size:13px}
-@media(min-width:760px){main{grid-template-columns:1fr 1fr}.wide{grid-column:1/-1}}
+:root {
+  --bg: #080d1a;
+  --panel: #10182b;
+  --panel2: #141f36;
+  --border: #253452;
+  --text: #edf4ff;
+  --muted: #91a4c3;
+  --blue: #4f8cff;
+  --cyan: #36e0d0;
+  --purple: #a78bfa;
+  --green: #45e0a8;
+  --red: #ff6b81;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at top left, #142447 0, transparent 45%),
+    radial-gradient(ellipse at top right, #192044 0, transparent 35%),
+    var(--bg);
+  color: var(--text);
+  font-family: Inter, system-ui, -apple-system, sans-serif;
+}
+
+header {
+  padding: 22px 20px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(8, 13, 26, .85);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  backdrop-filter: blur(16px);
+}
+
+.header-inner {
+  max-width: 1400px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.logo {
+  width: 46px;
+  height: 46px;
+  border-radius: 15px;
+  display: grid;
+  place-items: center;
+  font-size: 24px;
+  background: linear-gradient(135deg, var(--blue), var(--cyan));
+  color: #06111e;
+  box-shadow: 0 0 30px #4f8cff35;
+}
+
+h1 {
+  font-size: 20px;
+  margin: 0;
+  letter-spacing: -.5px;
+}
+
+.subtitle {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.badge {
+  padding: 8px 12px;
+  border: 1px solid #286b60;
+  border-radius: 30px;
+  color: var(--cyan);
+  background: #102a2b;
+  font-size: 12px;
+}
+
+main {
+  max-width: 1400px;
+  margin: auto;
+  padding: 22px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.stat, .card {
+  background: linear-gradient(145deg, #111b30, #0d1527);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: 0 10px 35px #00000012;
+}
+
+.stat {
+  padding: 17px;
+}
+
+.stat-label {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.stat-value {
+  font-size: 27px;
+  font-weight: 750;
+  margin-top: 7px;
+  letter-spacing: -1px;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 370px) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.left, .right {
+  display: grid;
+  gap: 20px;
+  min-width: 0;
+}
+
+.card {
+  padding: 20px;
+  min-width: 0;
+}
+
+.card-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.icon {
+  width: 35px;
+  height: 35px;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+  background: #1c3154;
+  font-size: 17px;
+}
+
+.card h2 {
+  font-size: 15px;
+  margin: 0;
+}
+
+.card-description {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 4px;
+  line-height: 1.5;
+}
+
+label {
+  display: block;
+  color: #b8c8e2;
+  font-size: 12px;
+  margin: 13px 0 7px;
+}
+
+textarea, input[type="text"], input[type="file"] {
+  width: 100%;
+  border: 1px solid #2a3a59;
+  background: #090f1e;
+  color: var(--text);
+  border-radius: 11px;
+  padding: 12px;
+  font: inherit;
+  font-size: 13px;
+  outline: none;
+}
+
+textarea {
+  min-height: 105px;
+  resize: vertical;
+  line-height: 1.55;
+}
+
+textarea:focus, input:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px #4f8cff17;
+}
+
+input[type="file"] {
+  padding: 9px;
+  font-size: 12px;
+}
+
+input[type="file"]::file-selector-button {
+  background: #203453;
+  color: var(--text);
+  border: 0;
+  border-radius: 7px;
+  padding: 7px 10px;
+  margin-right: 9px;
+  cursor: pointer;
+}
+
+button {
+  border: 1px solid #304361;
+  background: #1a2942;
+  color: var(--text);
+  border-radius: 10px;
+  padding: 10px 13px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+  transition: transform .15s, border-color .15s, filter .15s;
+}
+
+button:hover {
+  border-color: #5d8fe9;
+  filter: brightness(1.12);
+}
+
+button:active {
+  transform: scale(.98);
+}
+
+button.primary {
+  color: #061323;
+  background: linear-gradient(110deg, #5b91ff, #39d9d0);
+  border: 0;
+}
+
+button.purple {
+  background: #302650;
+  border-color: #514080;
+}
+
+button.danger {
+  background: #351e30;
+  border-color: #633248;
+  color: #ff9aac;
+}
+
+.button-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.button-row button {
+  flex: 1;
+}
+
+.status {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+  margin-top: 12px;
+  overflow-wrap: anywhere;
+}
+
+.status.success {
+  color: var(--green);
+}
+
+.status.error {
+  color: var(--red);
+}
+
+.map-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.map-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 19px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.map-title {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.map-title h2 {
+  font-size: 15px;
+  margin: 0;
+}
+
+.live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--green);
+  font-size: 11px;
+}
+
+.live::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  background: var(--green);
+  border-radius: 50%;
+  box-shadow: 0 0 10px #45e0a8;
+}
+
+.map-actions {
+  display: flex;
+  gap: 7px;
+}
+
+.map-wrap {
+  position: relative;
+  height: 510px;
+  background-color: #0a1120;
+  background-image:
+    linear-gradient(#26365130 1px, transparent 1px),
+    linear-gradient(90deg, #26365130 1px, transparent 1px),
+    radial-gradient(ellipse at center, #17294a66, transparent 70%);
+  background-size: 28px 28px, 28px 28px, 100% 100%;
+  overflow: hidden;
+}
+
+#map {
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: grab;
+  touch-action: pan-y;
+}
+
+#map:active {
+  cursor: grabbing;
+}
+
+.map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 13px 20px;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.selected-panel {
+  padding: 15px 20px;
+  border-top: 1px solid var(--border);
+  background: #0d1729;
+}
+
+.selected-title {
+  color: var(--cyan);
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 7px;
+}
+
+.selected-facts {
+  color: #c4d1e7;
+  font-size: 12px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.answer-box {
+  min-height: 90px;
+  white-space: pre-wrap;
+  line-height: 1.7;
+  font-size: 13px;
+  color: #d8e5fa;
+  background: #090f1e;
+  border: 1px solid #263754;
+  border-radius: 12px;
+  padding: 15px;
+  overflow-wrap: anywhere;
+}
+
+.answer-box:empty::before {
+  content: "Your answer will appear here...";
+  color: #647894;
+}
+
+.file-note {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-top: 8px;
+}
+
+footer {
+  max-width: 1400px;
+  margin: auto;
+  padding: 10px 22px 25px;
+  color: #7285a4;
+  font-size: 11px;
+  text-align: center;
+  line-height: 1.7;
+}
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .left {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .left .card:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 600px) {
+  header {
+    padding: 15px;
+  }
+
+  main {
+    padding: 14px;
+  }
+
+  .stats {
+    gap: 8px;
+  }
+
+  .stat {
+    padding: 12px;
+  }
+
+  .stat-value {
+    font-size: 23px;
+  }
+
+  .left {
+    grid-template-columns: 1fr;
+  }
+
+  .left .card:last-child {
+    grid-column: auto;
+  }
+
+  .card {
+    padding: 16px;
+  }
+
+  .map-wrap {
+    height: 390px;
+  }
+
+  .map-top {
+    padding: 15px;
+  }
+
+  .map-legend {
+    padding: 12px 15px;
+  }
+
+  .selected-panel {
+    padding: 14px 15px;
+  }
+
+  .badge {
+    font-size: 10px;
+  }
+}
 </style>
 </head>
+
 <body>
-<header><div class="brand">NEURAL <span>MAP</span> MAKER</div><div class="subtitle">From-scratch concept learning · mobile prototype · no pretrained model</div></header>
+
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <div class="logo">✳</div>
+      <div>
+        <h1>Neural Map Maker</h1>
+        <div class="subtitle">Learn facts. Build connections. Explore concepts.</div>
+      </div>
+    </div>
+    <div class="badge">● LOCAL LEARNING SYSTEM</div>
+  </div>
+</header>
+
 <main>
-<section class="card">
-<h2>01 / Seed vocabulary</h2>
-<p>Enter words or import a plain-text word list. One word or phrase per line.</p>
-<textarea id="words" placeholder="cat&#10;animal&#10;meow&#10;dog&#10;bark&#10;water&#10;ocean"></textarea>
-<input id="wordFile" type="file" accept=".txt,text/plain">
-<button class="secondary" id="addWords">Add words to map</button>
-</section>
-<section class="card">
-<h2>02 / Teach with facts</h2>
-<p>Enter facts or import a .txt file. Simple patterns such as “A cat is an animal” work best.</p>
-<textarea id="facts" placeholder="A cat is an animal.&#10;A cat can meow.&#10;A dog is an animal.&#10;A dog can bark.&#10;The ocean contains water."></textarea>
-<input id="factFile" type="file" accept=".txt,text/plain">
-<div class="row"><button class="primary" id="train">Learn from facts</button><button class="secondary" id="clear">Reset AI</button></div>
-<div class="status" id="trainStatus" aria-live="polite"></div>
-</section>
-<section class="card wide">
-<h2>03 / Neural map</h2>
-<p>Related concepts are pulled closer in a small learned concept space. Tap a node to inspect it.</p>
-<canvas id="map"></canvas>
-<div class="stats"><div class="stat"><b id="wordCount">0</b><small>concepts</small></div><div class="stat"><b id="factCount">0</b><small>facts learned</small></div><div class="stat"><b id="imageCount">0</b><small>image labels</small></div></div>
-<div id="selected" class="answer" style="margin-top:10px">Your map is empty. Add words or facts to begin.</div>
-</section>
-<section class="card">
-<h2>04 / Test what it learned</h2>
-<p>Ask a question based on the facts you supplied. Answers are retrieved from learned facts, not generated by a pretrained model.</p>
-<input id="question" type="text" placeholder="What animal can meow?">
-<div style="margin-top:8px"><button class="primary" id="ask">Ask AI</button></div>
-<div class="answer" id="answer" style="margin-top:10px">No question asked yet.</div>
-</section>
-<section class="card">
-<h2>05 / Image examples</h2>
-<p>Add image files as labeled examples. In this prototype, filenames become labels; pixel-level visual learning is not implemented yet.</p>
-<input id="images" type="file" accept="image/*" multiple>
-<div id="imageLabels"><span class="badge">No image labels added</span></div>
-</section>
-<section class="card">
-<h2>06 / Save and export</h2>
-<p>Save your workspace locally, export a backup, or export the learned concept vectors in a custom GGUF v3 container.</p>
-<div class="row"><button class="secondary" id="save">Save workspace</button><button class="secondary" id="jsonExport">Export JSON</button></div>
-<div class="row" style="margin-top:8px"><button class="primary" id="ggufExport">Export custom GGUF</button><button class="secondary" id="jsonImportBtn">Import JSON backup</button></div>
-<input id="jsonImport" type="file" accept=".json,application/json" hidden>
-<div class="status" id="exportStatus" aria-live="polite"></div>
-<details><summary>What does the GGUF export mean?</summary><p class="warning">The file stores custom concept vectors and vocabulary in GGUF v3 format. Standard inference engines will not run this custom architecture automatically; a matching runtime is required. This prototype is not a general-purpose language model.</p></details>
-</section>
+  <section class="stats">
+    <div class="stat">
+      <div class="stat-label">Vocabulary concepts</div>
+      <div class="stat-value" id="wordCount">0</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Learned facts</div>
+      <div class="stat-value" id="factCount">0</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Image labels</div>
+      <div class="stat-value" id="imageCount">0</div>
+    </div>
+  </section>
+
+  <div class="layout">
+    <div class="left">
+
+      <section class="card">
+        <div class="card-heading">
+          <div class="icon">◈</div>
+          <div>
+            <h2>Vocabulary</h2>
+            <div class="card-description">Add the concepts your system should know.</div>
+          </div>
+        </div>
+
+        <label for="words">Words or concepts</label>
+        <textarea id="words" placeholder="cat&#10;animal&#10;biology&#10;brain&#10;neural network"></textarea>
+
+        <label for="wordFile">Import vocabulary TXT</label>
+        <input type="file" id="wordFile" accept=".txt,text/plain">
+
+        <div class="button-row">
+          <button class="primary" id="addWords">＋ Add concepts</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-heading">
+          <div class="icon">⌘</div>
+          <div>
+            <h2>Teach the system</h2>
+            <div class="card-description">Enter facts as plain text, one fact per line.</div>
+          </div>
+        </div>
+
+        <label for="facts">Facts to learn</label>
+        <textarea id="facts" placeholder="A cat is an animal.&#10;A cat can meow.&#10;Animals need food.&#10;The brain contains neurons."></textarea>
+
+        <label for="factFile">Import facts TXT</label>
+        <input type="file" id="factFile" accept=".txt,text/plain">
+
+        <div class="button-row">
+          <button class="primary" id="train">✦ Learn facts</button>
+          <button class="danger" id="clear">Clear all</button>
+        </div>
+
+        <div class="status" id="trainStatus">Ready to learn from your data.</div>
+      </section>
+
+      <section class="card">
+        <div class="card-heading">
+          <div class="icon">▧</div>
+          <div>
+            <h2>Image labels</h2>
+            <div class="card-description">Import image filenames as concept labels.</div>
+          </div>
+        </div>
+
+        <label for="images">Choose images</label>
+        <input type="file" id="images" accept="image/*" multiple>
+
+        <div class="file-note">
+          This version learns filenames as labels. It does not analyze image pixels.
+        </div>
+
+        <div class="status" id="imageLabels">No image labels added.</div>
+      </section>
+
+      <section class="card">
+        <div class="card-heading">
+          <div class="icon">⇄</div>
+          <div>
+            <h2>Save and export</h2>
+            <div class="card-description">Back up your learned data or export the concept map.</div>
+          </div>
+        </div>
+
+        <div class="button-row">
+          <button id="save">Save locally</button>
+          <button id="jsonExport">Export JSON</button>
+        </div>
+
+        <div class="button-row">
+          <button class="purple" id="ggufExport">Export GGUF</button>
+          <button id="jsonImportBtn">Import JSON</button>
+        </div>
+
+        <input type="file" id="jsonImport" accept=".json,application/json" hidden>
+
+        <div class="status" id="exportStatus">Your data is stored in this browser when possible.</div>
+        <div class="file-note">
+          The GGUF export is a custom concept-data format, not a ready-to-run standard LLM model.
+        </div>
+      </section>
+
+    </div>
+
+    <div class="right">
+
+      <section class="card map-card">
+        <div class="map-top">
+          <div class="map-title">
+            <div class="icon">✳</div>
+            <div>
+              <h2>Neural concept map</h2>
+              <div class="card-description">Select a node to inspect its learned facts.</div>
+            </div>
+          </div>
+          <div class="map-actions">
+            <button id="resetMap">Reset view</button>
+          </div>
+        </div>
+
+        <div class="map-wrap">
+          <canvas id="map"></canvas>
+        </div>
+
+        <div class="map-legend">
+          <div class="legend-item">
+            <span class="legend-dot" style="background:#4f8cff"></span>
+            Concept
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background:#36e0d0"></span>
+            Connected concept
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background:#a78bfa"></span>
+            Selected concept
+          </div>
+        </div>
+
+        <div class="selected-panel">
+          <div class="selected-title" id="selected">No concept selected</div>
+          <div class="selected-facts" id="selectedFacts">
+            Add vocabulary and learn facts to build your concept map.
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-heading">
+          <div class="icon">⌕</div>
+          <div>
+            <h2>Ask what it has learned</h2>
+            <div class="card-description">Search the facts stored in your local knowledge base.</div>
+          </div>
+        </div>
+
+        <label for="question">Your question</label>
+        <input type="text" id="question" placeholder="What is a cat?">
+
+        <div class="button-row">
+          <button class="primary" id="ask">Find an answer →</button>
+        </div>
+
+        <label>Retrieved answer</label>
+        <div class="answer-box" id="answer" aria-live="polite"></div>
+
+        <div class="file-note">
+          Answers are retrieved from learned text using word matching. This is not a pretrained language model.
+        </div>
+      </section>
+
+    </div>
+  </div>
 </main>
-<div class="foot">Prototype v0.1 · Local-first storage · No network calls · No pretrained weights</div>
+
+<footer>
+  Neural Map Maker · Local-first concept learning prototype<br>
+  Your knowledge base is stored in browser storage when supported.
+</footer>
+
 <script>
-(() => {
-'use strict';
+"use strict";
+
+const STORAGE_KEY = "neuralMapMakerStateV2";
+
+const state = {
+  vocab: [],
+  facts: [],
+  images: [],
+  vectors: {},
+  selected: null
+};
+
 const $ = id => document.getElementById(id);
-const state = { vocab: [], facts: [], vectors: {}, imageLabels: [], seed: 1731, dim: 8 };
-const stop = new Set(['a','an','the','is','are','was','were','be','can','has','have','do','does','what','which','who','where','when','how','to','of','in','on','and','or','it','this','that','with','for','does','tell','me','about']);
-function norm(s){return String(s||'').toLowerCase().replace(/[^a-z0-9_\s'-]/g,' ').replace(/\s+/g,' ').trim();}
-function terms(s){return norm(s).split(' ').filter(w=>w && !stop.has(w));}
-function addVocab(s){const v=norm(s); if(v && !state.vocab.includes(v)) state.vocab.push(v);}
-function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
-function rng(seed){let x=seed>>>0;return()=>{x=(Math.imul(1664525,x)+1013904223)>>>0;return x/4294967296;};}
-function ensureVector(word){if(!state.vectors[word]){const r=rng(hash(word)^state.seed);state.vectors[word]=Array.from({length:state.dim},()=>r()*2-1);}return state.vectors[word];}
-function addWords(text){text.split(/[\n,;]+/).forEach(line=>{const w=norm(line);if(w)addVocab(w);});}
-function extractTriples(text){
- const out=[];
- const patterns=[
-  /^\s*(?:a|an|the)?\s*(.+?)\s+(is|are|was|were)\s+(?:a|an|the)?\s*(.+?)\s*[.!?]*$/i,
-  /^\s*(?:a|an|the)?\s*(.+?)\s+(can|has|have|contains|contain|lives in|live in|eats|eat|likes|like|needs|need|makes|make)\s+(.+?)\s*[.!?]*$/i
- ];
- text.split(/[\n]+/).map(x=>x.trim()).filter(Boolean).forEach(line=>{
-   let m=null, rel='';
-   for(let i=0;i<patterns.length;i++){m=line.match(patterns[i]);if(m){rel=m[2].toLowerCase();break;}}
-   if(m){
-     let subject=norm(m[1]).replace(/^(a|an|the)\s+/,'').trim();
-     let object=norm(m[3]).replace(/^(a|an|the)\s+/,'').trim();
-     if(subject&&object&&subject!==object)out.push({subject,relation:rel,object,text:line});
-   } else {
-     const ws=terms(line); if(ws.length>=2) out.push({subject:ws[0],relation:'related to',object:ws.slice(1).join(' '),text:line});
-   }
- });
- return out;
+
+const stopWords = new Set([
+  "the", "a", "an", "is", "are", "was", "were", "be", "been",
+  "being", "to", "of", "and", "or", "in", "on", "at", "for",
+  "from", "by", "with", "as", "it", "this", "that", "these",
+  "those", "i", "you", "he", "she", "we", "they", "what",
+  "which", "who", "whom", "when", "where", "why", "how",
+  "can", "could", "would", "should", "do", "does", "did",
+  "have", "has", "had", "will", "shall", "may", "might",
+  "about", "tell", "me", "please", "explain", "give", "show",
+  "your", "my", "their", "our", "its", "not", "but", "if",
+  "then", "than", "also", "into", "more", "most", "some",
+  "any", "all", "many", "much", "very", "there", "here",
+  "because", "such", "like", "know", "learned", "learn",
+  "system", "thing", "things"
+]);
+
+function norm(value) {
+  return String(value ?? "")
+    .toLowerCase()
+    .replace(/[’']/g, "")
+    .replace(/[^a-z0-9\s_-]/g, " ")
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
-function learn(){
- const text=$('facts').value.trim(); if(!text){$('trainStatus').textContent='Add facts before training.';return;}
- const triples=extractTriples(text); let added=0;
- triples.forEach(t=>{
-  [t.subject,t.relation,t.object].forEach(addVocab);
-  const key=[t.subject,t.relation,t.object].join('|');
-  if(!state.facts.some(f=>f.key===key)){state.facts.push({...t,key});added++;}
- });
- // From-scratch concept-space training: pull subject/object/relation vectors together,
- // and gently repel unrelated vocabulary pairs. No imported weights or pretrained model.
- state.vocab.forEach(ensureVector);
- for(let epoch=0;epoch<90;epoch++){
-  state.facts.forEach(f=>{
-   const a=ensureVector(f.subject), b=ensureVector(f.object), r=ensureVector(f.relation);
-   const rate=0.018;
-   for(let d=0;d<state.dim;d++){
-    const delta=b[d]-a[d]; a[d]+=delta*rate; b[d]-=delta*rate;
-    const mid=(a[d]+b[d])/2; r[d]+=(mid-r[d])*rate*0.35;
-   }
+
+function terms(value) {
+  return norm(value)
+    .split(" ")
+    .filter(word => word.length > 1 && !stopWords.has(word));
+}
+
+function unique(values) {
+  return [...new Set(values)];
+}
+
+function addVocab(words) {
+  let added = 0;
+
+  for (const raw of words) {
+    const word = String(raw).trim();
+    if (!word) continue;
+
+    const key = norm(word);
+    if (!key) continue;
+
+    const exists = state.vocab.some(item => norm(item) === key);
+
+    if (!exists) {
+      state.vocab.push(word);
+      ensureVector(word);
+      added++;
+    }
+  }
+
+  return added;
+}
+
+function hashString(value) {
+  let hash = 2166136261;
+
+  for (let i = 0; i < value.length; i++) {
+    hash ^= value.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+
+  return hash >>> 0;
+}
+
+function seededRandom(seed) {
+  let value = seed >>> 0;
+
+  return function() {
+    value += 0x6D2B79F5;
+
+    let t = value;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function ensureVector(word) {
+  if (state.vectors[word]) return state.vectors[word];
+
+  const random = seededRandom(hashString(norm(word)));
+
+  state.vectors[word] = [
+    random() * 2 - 1,
+    random() * 2 - 1,
+    random() * 2 - 1
+  ];
+
+  return state.vectors[word];
+}
+
+function addFact(raw) {
+  const text = String(raw).trim();
+  if (!text) return false;
+
+  const key = norm(text);
+
+  if (state.facts.some(fact => norm(fact.text) === key)) {
+    return false;
+  }
+
+  const factTerms = terms(text);
+
+  state.facts.push({
+    text,
+    terms: factTerms,
+    concepts: [],
+    time: Date.now()
   });
- }
- state.seed+=1;
- persist(); draw(); updateStats();
- $('trainStatus').textContent=`Training pass complete: ${added} new fact(s), ${state.facts.length} total.`;
+
+  const normalizedVocab = state.vocab.map(word => ({
+    word,
+    key: norm(word)
+  }));
+
+  for (const item of normalizedVocab) {
+    if (!item.key) continue;
+
+    if ((" " + key + " ").includes(" " + item.key + " ")) {
+      state.facts[state.facts.length - 1].concepts.push(item.word);
+    }
+  }
+
+  for (const word of factTerms) {
+    const exists = state.vocab.some(item => norm(item) === word);
+
+    if (!exists && word.length > 2) {
+      addVocab([word]);
+    }
+  }
+
+  return true;
 }
-function tokenizeQuestion(q){return terms(q).map(w=>w.replace(/'s$/,''));}
-function answer(q){
- const qTerms=tokenizeQuestion(q); if(!qTerms.length)return 'Enter a question first.';
- let best=null,bestScore=0;
- state.facts.forEach(f=>{
-  const all=terms(f.subject+' '+f.relation+' '+f.object);
-  let score=0; qTerms.forEach(w=>{if(all.includes(w))score+=2;else if(all.some(t=>t.includes(w)||w.includes(t)))score+=0.5;});
-  // Prefer a fact with a question's likely relation.
-  if(/\bwhat\b|\bwhich\b/.test(norm(q)) && f.relation==='is')score+=0.2;
-  if(score>bestScore){bestScore=score;best=f;}
- });
- if(!best || bestScore<1) return 'I could not find a matching fact in what I have learned. Try teaching a more direct fact first.';
- const rel=best.relation;
- if(/\bwhat animal\b|\bwhich animal\b/.test(norm(q)) && rel==='can') return `${best.subject} ${rel} ${best.object}.`;
- return `${best.text} (matched from learned facts)`;
+
+function extractTriples(text) {
+  const patterns = [
+    /^(.+?)\s+(?:is|are|was|were)\s+(?:a|an|the)?\s*(.+)$/i,
+    /^(.+?)\s+(?:can|could|will)\s+(.+)$/i,
+    /^(.+?)\s+(?:has|have|contains|contain)\s+(.+)$/i,
+    /^(.+?)\s+(?:needs|need|requires|require)\s+(.+)$/i,
+    /^(.+?)\s+(?:likes|like|eats|eat|uses|use|lives in)\s+(.+)$/i
+  ];
+
+  for (const pattern of patterns) {
+    const match = text.trim().replace(/[.!?]+$/, "").match(pattern);
+
+    if (match) {
+      return {
+        subject: match[1].trim(),
+        relation: "related to",
+        object: match[2].trim()
+      };
+    }
+  }
+
+  return null;
 }
-function persist(){try{localStorage.setItem('neuralMapMakerState',JSON.stringify(state));}catch(e){$('exportStatus').textContent='Could not save locally: storage may be full.';}}
-function loadState(){try{const raw=localStorage.getItem('neuralMapMakerState');if(raw){const x=JSON.parse(raw);Object.assign(state,x);}}catch(e){}}
-function updateStats(){$('wordCount').textContent=state.vocab.length;$('factCount').textContent=state.facts.length;$('imageCount').textContent=state.imageLabels.length;
- $('imageLabels').innerHTML=state.imageLabels.length?state.imageLabels.map(x=>`<span class="badge">${escapeHtml(x)}</span>`).join(''):'<span class="badge">No image labels added</span>';}
-function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-function draw(){
- const canvas=$('map'),ctx=canvas.getContext('2d'),rect=canvas.getBoundingClientRect(),dpr=window.devicePixelRatio||1;
- canvas.width=Math.max(1,rect.width*dpr);canvas.height=Math.max(1,rect.height*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);
- const w=rect.width,h=rect.height;ctx.clearRect(0,0,w,h);ctx.fillStyle='#091121';ctx.fillRect(0,0,w,h);
- if(!state.vocab.length){ctx.fillStyle='#98a8c8';ctx.font='13px system-ui';ctx.textAlign='center';ctx.fillText('Your learned concepts will appear here',w/2,h/2);return;}
- const nodes=state.vocab.slice(0,180).map((word,i)=>{const v=ensureVector(word);return {word,x:w/2+(v[0]||0)*w*.28,y:h/2+(v[1]||0)*h*.28};});
- const pos=new Map(nodes.map(n=>[n.word,n]));
- ctx.strokeStyle='#344b78';ctx.lineWidth=1;
- state.facts.forEach(f=>{const a=pos.get(f.subject),b=pos.get(f.object);if(a&&b){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();}});
- nodes.forEach(n=>{ctx.beginPath();ctx.arc(n.x,n.y,4.5,0,Math.PI*2);ctx.fillStyle='#7c9cff';ctx.fill();ctx.font='11px system-ui';ctx.textAlign='center';ctx.fillStyle='#dbe6ff';ctx.fillText(n.word.length>18?n.word.slice(0,17)+'…':n.word,n.x,n.y-8);});
- canvas.onclick=e=>{const r=canvas.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;let best=null,dist=Infinity;nodes.forEach(n=>{const d=Math.hypot(n.x-x,n.y-y);if(d<dist){dist=d;best=n;}});if(best&&dist<35){const facts=state.facts.filter(f=>f.subject===best.word||f.object===best.word||f.relation===best.word);$('selected').textContent=`Concept: ${best.word}\nVector: [${ensureVector(best.word).map(n=>n.toFixed(2)).join(', ')}]\n${facts.length?facts.map(f=>f.text).join('\n'):'No explicit facts connected yet.'}`;}};
+
+function learn(text) {
+  const lines = String(text)
+    .split(/\r?\n/)
+    .map(line => line.trim())
+    .filter(Boolean);
+
+  let learned = 0;
+  let skipped = 0;
+
+  for (const line of lines) {
+    if (addFact(line)) {
+      learned++;
+
+      const triple = extractTriples(line);
+
+      if (triple) {
+        addVocab([triple.subject, triple.object]);
+      }
+    } else {
+      skipped++;
+    }
+  }
+
+  return { learned, skipped, total: lines.length };
 }
-function base64(bytes){let bin='';const chunk=0x8000;for(let i=0;i<bytes.length;i+=chunk)bin+=String.fromCharCode(...bytes.subarray(i,i+chunk));return btoa(bin);}
-function downloadFile(name,mime,bytes){
- if(window.AndroidBridge&&window.AndroidBridge.saveFile){window.AndroidBridge.saveFile(name,mime,base64(bytes));}
- else {const blob=new Blob([bytes],{type:mime}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);}
+
+function setStatus(id, message, type = "") {
+  const element = $(id);
+  element.textContent = message;
+  element.className = "status" + (type ? " " + type : "");
 }
-function exportJson(){const bytes=new TextEncoder().encode(JSON.stringify(state,null,2));downloadFile('neural-map-workspace.json','application/json',bytes);$('exportStatus').textContent='JSON workspace export requested.';}
-function u32(n){const a=new Uint8Array(4);new DataView(a.buffer).setUint32(0,n,true);return a;}
-function u64(n){const a=new Uint8Array(8);new DataView(a.buffer).setBigUint64(0,BigInt(n),true);return a;}
-function str(s){const b=new TextEncoder().encode(s);return concat([u64(b.length),b]);}
-function concat(parts){let len=parts.reduce((s,p)=>s+p.length,0),out=new Uint8Array(len),at=0;parts.forEach(p=>{out.set(p,at);at+=p.length;});return out;}
-function metaString(k,v){return concat([str(k),u32(8),str(v)]);}
-function metaU32(k,v){return concat([str(k),u32(4),u32(v)]);}
-function metaStringArray(k,arr){return concat([str(k),u32(9),u32(8),u64(arr.length),...arr.map(str)]);}
-function exportGguf(){
- const vocab=state.vocab.length?state.vocab:['empty'];vocab.forEach(ensureVector);
- // GGUF v3: one F32 tensor named concept_vectors, stored as [dimension, vocabulary size].
- const tensorName=str('concept_vectors');
- const tensorInfo=concat([tensorName,u32(2),u64(state.dim),u64(vocab.length),u32(0),u64(0)]);
- const kv=[
-  metaString('general.architecture','neural_map_custom'),
-  metaString('general.name','Neural Map Maker concept space'),
-  metaU32('general.alignment',32),
-  metaStringArray('neural_map.vocabulary',vocab),
-  metaU32('neural_map.vector_dimension',state.dim)
- ];
- const header=concat([new TextEncoder().encode('GGUF'),u32(3),u64(1),u64(kv.length),...kv,tensorInfo]);
- const padLen=(32-(header.length%32))%32;const padding=new Uint8Array(padLen);
- const floats=new Uint8Array(vocab.length*state.dim*4),view=new DataView(floats.buffer);let at=0;
- for(let i=0;i<vocab.length;i++)for(let d=0;d<state.dim;d++)view.setFloat32(at++*4,ensureVector(vocab[i])[d]||0,true);
- const bytes=concat([header,padding,floats]);
- downloadFile('neural-map-custom.gguf','application/octet-stream',bytes);
- $('exportStatus').textContent='Custom GGUF v3 exported. A compatible custom runtime is still required; standard LLM runners will not execute this architecture.';
+
+function persist() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    return true;
+  } catch (error) {
+    console.warn("Could not save state:", error);
+    return false;
+  }
 }
-$('wordFile').addEventListener('change',async e=>{const f=e.target.files[0];if(f)$('words').value=await f.text();});
-$('factFile').addEventListener('change',async e=>{const f=e.target.files[0];if(f)$('facts').value=await f.text();});
-$('addWords').onclick=()=>{addWords($('words').value);state.vocab.forEach(ensureVector);persist();draw();updateStats();$('trainStatus').textContent='Vocabulary added. Add facts to teach relationships.';};
-$('train').onclick=learn;
-$('ask').onclick=()=>{$('answer').textContent=answer($('question').value);};
-$('question').addEventListener('keydown',e=>{if(e.key==='Enter')$('ask').click();});
-$('clear').onclick=()=>{if(confirm('Reset the AI workspace and delete its saved local state?')){state.vocab=[];state.facts=[];state.vectors={};state.imageLabels=[];localStorage.removeItem('neuralMapMakerState');$('words').value='';$('facts').value='';$('answer').textContent='Workspace reset.';$('selected').textContent='Your map is empty. Add words or facts to begin.';$('trainStatus').textContent='';updateStats();draw();}};
-$('save').onclick=()=>{persist();$('exportStatus').textContent='Workspace saved on this device.';};
-$('jsonExport').onclick=exportJson;
-$('ggufExport').onclick=exportGguf;
-$('jsonImportBtn').onclick=()=>$('jsonImport').click();
-$('jsonImport').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{const x=JSON.parse(await f.text());if(!x||!Array.isArray(x.vocab)||!Array.isArray(x.facts)||typeof x.vectors!=='object')throw new Error('Invalid workspace');Object.assign(state,x);persist();draw();updateStats();$('exportStatus').textContent='Workspace imported.';}catch(err){$('exportStatus').textContent='Import failed: '+err.message;}e.target.value='';});
-$('images').addEventListener('change',e=>{Array.from(e.target.files||[]).forEach(f=>{const label=f.name.replace(/\.[^.]+$/,'').replace(/[_-]+/g,' ').trim();if(label&&!state.imageLabels.includes(label)){state.imageLabels.push(label);addVocab(label);ensureVector(label);}});persist();draw();updateStats();$('trainStatus').textContent='Image filenames added as labels. This version does not learn from image pixels.';e.target.value='';});
-loadState();state.vocab.forEach(ensureVector);updateStats();draw();
-window.addEventListener('resize',draw);
-})();
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+
+    if (!raw) return;
+
+    const saved = JSON.parse(raw);
+
+    state.vocab = Array.isArray(saved.vocab) ? saved.vocab : [];
+    state.facts = Array.isArray(saved.facts) ? saved.facts : [];
+    state.images = Array.isArray(saved.images) ? saved.images : [];
+    state.vectors = saved.vectors && typeof saved.vectors === "object"
+      ? saved.vectors
+      : {};
+    state.selected = saved.selected || null;
+
+    state.facts = state.facts.map(fact => {
+      if (typeof fact === "string") {
+        return {
+          text: fact,
+          terms: terms(fact),
+          concepts: [],
+          time: Date.now()
+        };
+      }
+
+      return {
+        ...fact,
+        text: String(fact.text || ""),
+        terms: Array.isArray(fact.terms) ? fact.terms : terms(fact.text || ""),
+        concepts: Array.isArray(fact.concepts) ? fact.concepts : []
+      };
+    });
+
+    state.vocab.forEach(ensureVector);
+  } catch (error) {
+    console.warn("Could not load saved state:", error);
+  }
+}
+
+function updateStats() {
+  $("wordCount").textContent = state.vocab.length;
+  $("factCount").textContent = state.facts.length;
+  $("imageCount").textContent = state.images.length;
+}
+
+function renderSelected() {
+  const title = $("selected");
+  const details = $("selectedFacts");
+
+  if (!state.selected) {
+    title.textContent = "No concept selected";
+    details.textContent = "Tap a node on the map to inspect its facts.";
+    return;
+  }
+
+  title.textContent = state.selected;
+
+  const key = norm(state.selected);
+
+  const related = state.facts.filter(fact => {
+    const text = norm(fact.text);
+
+    return text.includes(key) ||
+      fact.concepts.some(concept => norm(concept) === key);
+  });
+
+  if (!related.length) {
+    details.textContent = "No facts found for this concept yet.";
+    return;
+  }
+
+  details.textContent = related
+    .slice(0, 20)
+    .map(fact => "• " + fact.text)
+    .join("\n");
+}
+
+let hitNodes = [];
+let resizeTimer;
+
+function draw() {
+  const canvas = $("map");
+  const rect = canvas.getBoundingClientRect();
+
+  if (!rect.width || !rect.height) return;
+
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+  canvas.width = Math.round(rect.width * dpr);
+  canvas.height = Math.round(rect.height * dpr);
+
+  const ctx = canvas.getContext("2d");
+
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, rect.width, rect.height);
+
+  const width = rect.width;
+  const height = rect.height;
+
+  hitNodes = [];
+
+  if (!state.vocab.length) {
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    ctx.fillStyle = "#7185a4";
+    ctx.font = "600 15px system-ui";
+    ctx.fillText("Your neural map starts here", width / 2, height / 2 - 12);
+
+    ctx.fillStyle = "#526783";
+    ctx.font = "12px system-ui";
+    ctx.fillText("Add concepts and learn facts to create connections", width / 2, height / 2 + 15);
+
+    return;
+  }
+
+  const nodes = [];
+  const count = state.vocab.length;
+
+  const centerX = width / 2;
+  const centerY = height / 2;
+
+  const radiusX = Math.max(60, width * 0.36);
+  const radiusY = Math.max(60, height * 0.34);
+
+  state.vocab.forEach((word, index) => {
+    const vector = ensureVector(word);
+
+    const angle = (Math.PI * 2 * index / Math.max(count, 1)) - Math.PI / 2;
+
+    const spread = Math.min(1, 0.55 + count * 0.025);
+
+    let x = centerX + Math.cos(angle) * radiusX * spread;
+    let y = centerY + Math.sin(angle) * radiusY * spread;
+
+    x += vector[0] * Math.min(25, width * 0.035);
+    y += vector[1] * Math.min(20, height * 0.035);
+
+    nodes.push({
+      word,
+      x,
+      y,
+      index,
+      radius: Math.max(12, Math.min(19, 14 + Math.log2(count + 1))),
+      selected: state.selected && norm(word) === norm(state.selected)
+    });
+  });
+
+  const edges = [];
+
+  for (const fact of state.facts) {
+    const matched = nodes.filter(node => {
+      const key = norm(node.word);
+      return key && (" " + norm(fact.text) + " ").includes(" " + key + " ");
+    });
+
+    for (let i = 0; i < matched.length; i++) {
+      for (let j = i + 1; j < matched.length; j++) {
+        edges.push({
+          a: matched[i],
+          b: matched[j],
+          fact: fact.text
+        });
+      }
+    }
+  }
+
+  const seenEdges = new Set();
+
+  for (const edge of edges) {
+    const key = [edge.a.index, edge.b.index].sort((a, b) => a - b).join(":");
+
+    if (seenEdges.has(key)) continue;
+    seenEdges.add(key);
+
+    const a = edge.a;
+    const b = edge.b;
+
+    const midX = (a.x + b.x) / 2;
+    const midY = (a.y + b.y) / 2;
+
+    const bendX = (centerX - midX) * 0.12;
+    const bendY = (centerY - midY) * 0.12;
+
+    ctx.beginPath();
+    ctx.moveTo(a.x, a.y);
+    ctx.quadraticCurveTo(midX + bendX, midY + bendY, b.x, b.y);
+
+    ctx.strokeStyle = "#4773a74a";
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+  }
+
+  for (const node of nodes) {
+    const isSelected = node.selected;
+
+    const connected = edges.some(edge =>
+      edge.a.index === node.index || edge.b.index === node.index
+    );
+
+    const color = isSelected
+      ? "#a78bfa"
+      : connected
+        ? "#36e0d0"
+        : "#4f8cff";
+
+    if (isSelected) {
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, node.radius + 12, 0, Math.PI * 2);
+      ctx.fillStyle = "#a78bfa12";
+      ctx.fill();
+    }
+
+    const glow = ctx.createRadialGradient(
+      node.x, node.y, 1,
+      node.x, node.y, node.radius + 10
+    );
+
+    glow.addColorStop(0, color + "40");
+    glow.addColorStop(1, color + "00");
+
+    ctx.beginPath();
+    ctx.arc(node.x, node.y, node.radius + 10, 0, Math.PI * 2);
+    ctx.fillStyle = glow;
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+    ctx.fillStyle = isSelected ? "#30284d" : "#14243d";
+    ctx.fill();
+
+    ctx.strokeStyle = color;
+    ctx.lineWidth = isSelected ? 2.4 : 1.5;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(node.x, node.y, 3, 0, Math.PI * 2);
+    ctx.fillStyle = color;
+    ctx.fill();
+
+    ctx.font = (isSelected ? "700 " : "600 ") + "11px system-ui";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "top";
+
+    const label = node.word.length > 22
+      ? node.word.slice(0, 20) + "…"
+      : node.word;
+
+    const labelWidth = ctx.measureText(label).width;
+
+    ctx.fillStyle = "#09111f";
+    ctx.fillRect(
+      node.x - labelWidth / 2 - 5,
+      node.y + node.radius + 5,
+      labelWidth + 10,
+      20
+    );
+
+    ctx.fillStyle = isSelected ? "#d9caff" : "#c5d6f0";
+    ctx.fillText(label, node.x, node.y + node.radius + 9);
+
+    hitNodes.push(node);
+  }
+}
+
+function selectNode(node) {
+  state.selected = node.word;
+  renderSelected();
+  draw();
+  persist();
+}
+
+function answerQuestion(question) {
+  const query = String(question || "").trim();
+
+  if (!query) {
+    return "Enter a question first.";
+  }
+
+  if (!state.facts.length) {
+    return "I have not learned any facts yet. Add facts in the Teach the system section first.";
+  }
+
+  const queryNorm = norm(query);
+  const queryTerms = unique(terms(query));
+
+  if (!queryTerms.length) {
+    return "Please enter a question containing a meaningful concept, such as “What is a cat?”";
+  }
+
+  const exactConcepts = state.vocab
+    .filter(word => {
+      const key = norm(word);
+      return key && (
+        queryNorm === key ||
+        queryNorm.includes(key) ||
+        key.includes(queryNorm)
+      );
+    })
+    .sort((a, b) => norm(b).length - norm(a).length);
+
+  const ranked = state.facts.map(fact => {
+    const textNorm = norm(fact.text);
+    const factTerms = unique(terms(fact.text));
+
+    let score = 0;
+    let matched = 0;
+
+    for (const term of queryTerms) {
+      if (factTerms.includes(term)) {
+        score += term.length >= 5 ? 3 : 2;
+        matched++;
+      } else if (term.length >= 5 && factTerms.some(
+        item => item.length >= 5 &&
+        (item.includes(term) || term.includes(item))
+      )) {
+        score += 0.7;
+      }
+    }
+
+    for (const concept of exactConcepts) {
+      const conceptNorm = norm(concept);
+
+      if (conceptNorm && textNorm.includes(conceptNorm)) {
+        score += 4 + Math.min(3, conceptNorm.length / 5);
+      }
+    }
+
+    const coverage = matched / Math.max(queryTerms.length, 1);
+
+    if (coverage < 0.25) score *= 0.35;
+
+    if (queryTerms.length >= 2 && matched === 0) {
+      score = 0;
+    }
+
+    return {
+      text: fact.text,
+      score,
+      coverage,
+      matched
+    };
+  });
+
+  ranked.sort((a, b) => b.score - a.score);
+
+  const best = ranked[0];
+
+  if (!best || best.score < 2 || best.matched === 0) {
+    return "I couldn't find a sufficiently relevant learned fact for that question.\n\nTry asking about a concept you have taught me, or add more facts first.";
+  }
+
+  const threshold = Math.max(2, best.score * 0.52);
+
+  const results = ranked
+    .filter(item =>
+      item.score >= threshold &&
+      item.score >= 2 &&
+      item.matched > 0
+    )
+    .slice(0, 4);
+
+  const uniqueResults = [];
+  const used = new Set();
+
+  for (const result of results) {
+    const key = norm(result.text);
+
+    if (!used.has(key)) {
+      used.add(key);
+      uniqueResults.push(result.text);
+    }
+  }
+
+  if (!uniqueResults.length) {
+    return "I couldn't find a sufficiently relevant learned fact for that question.";
+  }
+
+  return uniqueResults.join("\n\n");
+}
+
+$("addWords").addEventListener("click", () => {
+  const input = $("words").value;
+
+  const list = input
+    .split(/[\n,;]+/)
+    .map(item => item.trim())
+    .filter(Boolean);
+
+  const added = addVocab(list);
+
+  updateStats();
+  draw();
+  persist();
+
+  setStatus(
+    "trainStatus",
+    added
+      ? `Added ${added} new concept${added === 1 ? "" : "s"}.`
+      : "No new concepts were added.",
+    added ? "success" : ""
+  );
+});
+
+$("wordFile").addEventListener("change", async event => {
+  const file = event.target.files[0];
+
+  if (!file) return;
+
+  try {
+    const text = await file.text();
+
+    $("words").value = text;
+
+    setStatus("trainStatus", `Loaded vocabulary file: ${file.name}`);
+  } catch (error) {
+    setStatus("trainStatus", "Could not read that vocabulary file.", "error");
+  }
+});
+
+$("factFile").addEventListener("change", async event => {
+  const file = event.target.files[0];
+
+  if (!file) return;
+
+  try {
+    $("facts").value = await file.text();
+    setStatus("trainStatus", `Loaded fact file: ${file.name}`);
+  } catch (error) {
+    setStatus("trainStatus", "Could not read that fact file.", "error");
+  }
+});
+
+$("train").addEventListener("click", () => {
+  const text = $("facts").value;
+
+  if (!text.trim()) {
+    setStatus("trainStatus", "Enter some facts before training.", "error");
+    return;
+  }
+
+  const result = learn(text);
+
+  updateStats();
+  draw();
+  renderSelected();
+  persist();
+
+  setStatus(
+    "trainStatus",
+    `Learning complete. Added ${result.learned} fact(s). Skipped ${result.skipped} duplicate(s).`,
+    result.learned ? "success" : ""
+  );
+});
+
+$("clear").addEventListener("click", () => {
+  const confirmed = confirm(
+    "Delete all vocabulary, learned facts, image labels, and saved concept vectors?"
+  );
+
+  if (!confirmed) return;
+
+  state.vocab = [];
+  state.facts = [];
+  state.images = [];
+  state.vectors = {};
+  state.selected = null;
+
+  $("words").value = "";
+  $("facts").value = "";
+  $("question").value = "";
+  $("answer").textContent = "";
+  $("imageLabels").textContent = "No image labels added.";
+
+  updateStats();
+  renderSelected();
+  draw();
+  persist();
+
+  setStatus("trainStatus", "All learning data has been cleared.", "success");
+});
+
+$("ask").addEventListener("click", () => {
+  $("answer").textContent = answerQuestion($("question").value);
+});
+
+$("question").addEventListener("keydown", event => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    $("ask").click();
+  }
+});
+
+$("images").addEventListener("change", event => {
+  const files = Array.from(event.target.files || []);
+
+  let added = 0;
+
+  for (const file of files) {
+    const name = file.name.replace(/\.[^.]+$/, "").replace(/[_-]+/g, " ").trim();
+
+    if (!name) continue;
+
+    const exists = state.images.some(
+      item => norm(typeof item === "string" ? item : item.name) === norm(name)
+    );
+
+    if (!exists) {
+      state.images.push({
+        name,
+        type: file.type || "image/unknown",
+        size: file.size
+      });
+
+      addVocab([name]);
+      added++;
+    }
+  }
+
+  $("imageLabels").textContent = state.images.length
+    ? state.images.map(item =>
+        "• " + (typeof item === "string" ? item : item.name)
+      ).join("\n")
+    : "No image labels added.";
+
+  updateStats();
+  draw();
+  persist();
+
+  setStatus(
+    "exportStatus",
+    `Added ${added} image label(s). Image pixels are not analyzed.`,
+    added ? "success" : ""
+  );
+});
+
+$("save").addEventListener("click", () => {
+  const success = persist();
+
+  setStatus(
+    "exportStatus",
+    success
+      ? "Your knowledge base has been saved in local browser storage."
+      : "Browser storage was unavailable. Export JSON to make a backup.",
+    success ? "success" : "error"
+  );
+
+  if (window.AndroidBridge && typeof window.AndroidBridge.saveState === "function") {
+    try {
+      window.AndroidBridge.saveState(JSON.stringify(state));
+    } catch (error) {
+      console.warn("Android save bridge failed:", error);
+    }
+  }
+});
+
+function downloadFile(filename, content, mimeType) {
+  if (window.AndroidBridge && typeof window.AndroidBridge.saveFile === "function") {
+    try {
+      window.AndroidBridge.saveFile(filename, content, mimeType);
+      return true;
+    } catch (error) {
+      console.warn("Android file bridge failed:", error);
+    }
+  }
+
+  try {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = filename;
+    link.style.display = "none";
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    setTimeout(() => URL.revokeObjectURL(url), 3000);
+
+    return true;
+  } catch (error) {
+    console.error("Download failed:", error);
+    return false;
+  }
+}
+
+$("jsonExport").addEventListener("click", () => {
+  const data = JSON.stringify(state, null, 2);
+
+  const success = downloadFile(
+    "neural-map-data.json",
+    data,
+    "application/json"
+  );
+
+  setStatus(
+    "exportStatus",
+    success ? "JSON export started." : "JSON export failed.",
+    success ? "success" : "error"
+  );
+});
+
+$("jsonImportBtn").addEventListener("click", () => {
+  $("jsonImport").click();
+});
+
+$("jsonImport").addEventListener("change", async event => {
+  const file = event.target.files[0];
+
+  if (!file) return;
+
+  try {
+    const imported = JSON.parse(await file.text());
+
+    if (!imported || !Array.isArray(imported.vocab) || !Array.isArray(imported.facts)) {
+      throw new Error("This file is not a valid Neural Map Maker JSON backup.");
+    }
+
+    state.vocab = imported.vocab.map(String);
+    state.facts = imported.facts.map(fact => {
+      if (typeof fact === "string") {
+        return {
+          text: fact,
+          terms: terms(fact),
+          concepts: [],
+          time: Date.now()
+        };
+      }
+
+      return {
+        ...fact,
+        text: String(fact.text || ""),
+        terms: Array.isArray(fact.terms) ? fact.terms : terms(fact.text || ""),
+        concepts: Array.isArray(fact.concepts) ? fact.concepts : []
+      };
+    });
+
+    state.images = Array.isArray(imported.images) ? imported.images : [];
+    state.vectors = imported.vectors && typeof imported.vectors === "object"
+      ? imported.vectors
+      : {};
+
+    state.selected = imported.selected || null;
+
+    state.vocab.forEach(ensureVector);
+
+    updateStats();
+    renderSelected();
+    draw();
+    persist();
+
+    $("imageLabels").textContent = state.images.length
+      ? state.images.map(item =>
+          "• " + (typeof item === "string" ? item : item.name)
+        ).join("\n")
+      : "No image labels added.";
+
+    setStatus("exportStatus", "JSON backup imported successfully.", "success");
+  } catch (error) {
+    setStatus("exportStatus", "Import failed: " + error.message, "error");
+  } finally {
+    event.target.value = "";
+  }
+});
+
+$("ggufExport").addEventListener("click", () => {
+  /*
+    Custom concept-data container.
+    This is NOT a standard GGUF model architecture and is
+    NOT directly loadable by standard GGUF inference engines.
+  */
+
+  const encoder = new TextEncoder();
+
+  const metadata = {
+    format: "NeuralMapMakerConceptData",
+    version: 3,
+    architecture: "neural-map-concepts",
+    vocab_size: state.vocab.length,
+    fact_count: state.facts.length,
+    image_label_count: state.images.length,
+    description: "Custom concept graph export; not a runnable LLM.",
+    vocab: state.vocab,
+    facts: state.facts.map(fact => fact.text),
+    images: state.images,
+    vectors: state.vectors
+  };
+
+  const json = JSON.stringify(metadata);
+  const jsonBytes = encoder.encode(json);
+
+  /*
+    Simple custom binary wrapper:
+    4 bytes: NMMP magic
+    4 bytes: version (little-endian)
+    4 bytes: JSON payload length (little-endian)
+    Remaining bytes: UTF-8 JSON payload
+  */
+
+  const header = new ArrayBuffer(12);
+  const view = new DataView(header);
+
+  view.setUint8(0, 78);  // N
+  view.setUint8(1, 77);  // M
+  view.setUint8(2, 77);  // M
+  view.setUint8(3, 80);  // P
+
+  view.setUint32(4, 3, true);
+  view.setUint32(8, jsonBytes.length, true);
+
+  const bytes = new Uint8Array(12 + jsonBytes.length);
+
+  bytes.set(new Uint8Array(header), 0);
+  bytes.set(jsonBytes, 12);
+
+  const blob = new Blob([bytes], {
+    type: "application/octet-stream"
+  });
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = "neural-map-custom-v3.gguf";
+  link.style.display = "none";
+
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  setTimeout(() => URL.revokeObjectURL(url), 3000);
+
+  setStatus(
+    "exportStatus",
+    "Custom concept-data export created. This is not a standard runnable GGUF model.",
+    "success"
+  );
+});
+
+$("map").addEventListener("click", event => {
+  const canvas = $("map");
+  const rect = canvas.getBoundingClientRect();
+
+  const x = event.clientX - rect.left;
+  const y = event.clientY - rect.top;
+
+  let nearest = null;
+  let nearestDistance = Infinity;
+
+  for (const node of hitNodes) {
+    const distance = Math.hypot(node.x - x, node.y - y);
+
+    if (distance < node.radius + 15 && distance < nearestDistance) {
+      nearest = node;
+      nearestDistance = distance;
+    }
+  }
+
+  if (nearest) {
+    selectNode(nearest);
+  }
+});
+
+$("resetMap").addEventListener("click", () => {
+  draw();
+});
+
+window.addEventListener("resize", () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(draw, 80);
+});
+
+loadState();
+updateStats();
+renderSelected();
+draw();
+
+if (state.images.length) {
+  $("imageLabels").textContent = state.images.map(item =>
+    "• " + (typeof item === "string" ? item : item.name)
+  ).join("\n");
+}
 </script>
+
 </body>
 </html>
